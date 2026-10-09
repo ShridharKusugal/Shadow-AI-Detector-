@@ -75,13 +75,13 @@ export const LoginPage: React.FC = () => {
     setMode('login');
     if (role === 'admin') {
       setLoginIdentifier('admin');
-      setLoginPassword('Admin@1234');
+      setLoginPassword('AdminSecure2026!');
     } else if (role === 'analyst') {
       setLoginIdentifier('analyst');
-      setLoginPassword('Analyst@1234');
+      setLoginPassword('AnalystSecure2026!');
     } else if (role === 'auditor') {
-      setLoginIdentifier('auditor');
-      setLoginPassword('Auditor@1234');
+      setLoginIdentifier('viewer');
+      setLoginPassword('ViewerSecure2026!');
     }
   };
 
