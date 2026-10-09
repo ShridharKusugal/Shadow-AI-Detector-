@@ -17,7 +17,8 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     APP_ENV: str = os.getenv("APP_ENV", "development")
 
-    # MySQL connection configuration
+    # Database configuration (supports direct DATABASE_URL for Render PostgreSQL/Supabase, or MySQL vars)
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "")
     DB_HOST: str = os.getenv("DB_HOST", "localhost")
     DB_PORT: int = int(os.getenv("DB_PORT", "3306"))
     DB_USER: str = os.getenv("DB_USER", "root")

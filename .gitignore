@@ -35,6 +35,8 @@ wheels/
 models/*.pkl
 models/*.joblib
 !models/model_metadata.json
+!models/shadow_ai_detector_rf.joblib
+
 
 # Node & Frontend
 node_modules/
