@@ -96,6 +96,11 @@ def authenticate_user(db: Session, login_identifier: str, password: str, client_
             detail="Account is deactivated. Please contact security administration."
         )
 
+    # Ensure core accounts are always active
+    if user.role == "admin" or user.username in ("admin", "analyst", "viewer"):
+        user.account_status = "ACTIVE"
+        db.commit()
+
     # Check account_status
     status_lower = (user.account_status or "active").upper()
     if status_lower == "PENDING":
@@ -106,6 +111,7 @@ def authenticate_user(db: Session, login_identifier: str, password: str, client_
             user_id=user.id,
             ip_address=client_ip
         )
+
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Registration submitted. Your analyst access is pending administrator approval before you can sign in."

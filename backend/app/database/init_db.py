@@ -9,41 +9,32 @@ from app.core.security import hash_password
 
 def init_db(db: Session) -> None:
     """Seed initial administrator, analyst, viewer, AI providers catalog, and baseline policies."""
-    # 1. Seed Users if not present
-    admin_user = db.query(User).filter(User.username == "admin").first()
-    if not admin_user:
-        admin_user = User(
-            username="admin",
-            email="admin@shadow-ai-defense.corp",
-            hashed_password=hash_password("AdminSecure2026!"),
-            role="admin",
-            is_active=True
-        )
-        db.add(admin_user)
+    # 1. Seed or activate core system users
+    users_to_seed = [
+        ("admin", "admin@shadow-ai-defense.corp", "AdminSecure2026!", "admin"),
+        ("analyst", "analyst@shadow-ai-defense.corp", "AnalystSecure2026!", "analyst"),
+        ("viewer", "viewer@shadow-ai-defense.corp", "ViewerSecure2026!", "viewer"),
+    ]
 
-    analyst_user = db.query(User).filter(User.username == "analyst").first()
-    if not analyst_user:
-        analyst_user = User(
-            username="analyst",
-            email="analyst@shadow-ai-defense.corp",
-            hashed_password=hash_password("AnalystSecure2026!"),
-            role="analyst",
-            is_active=True
-        )
-        db.add(analyst_user)
-
-    viewer_user = db.query(User).filter(User.username == "viewer").first()
-    if not viewer_user:
-        viewer_user = User(
-            username="viewer",
-            email="viewer@shadow-ai-defense.corp",
-            hashed_password=hash_password("ViewerSecure2026!"),
-            role="viewer",
-            is_active=True
-        )
-        db.add(viewer_user)
+    for username, email, raw_password, role in users_to_seed:
+        user = db.query(User).filter(User.username == username).first()
+        if not user:
+            user = User(
+                username=username,
+                email=email,
+                hashed_password=hash_password(raw_password),
+                role=role,
+                account_status="ACTIVE",
+                is_active=True
+            )
+            db.add(user)
+        else:
+            user.account_status = "ACTIVE"
+            user.is_active = True
+            user.role = role
 
     db.commit()
+
 
     # 2. Seed AI Providers and Domains from curated catalog if empty
     provider_count = db.query(AIProvider).count()
