@@ -1,0 +1,57 @@
+{
+  "model_name": "Shadow AI Classifier (Random Forest)",
+  "model_version": "1.0.0",
+  "dataset_type": "synthetic_benchmark",
+  "dataset_path": "data/sample/shadow_ai_events_synthetic.csv",
+  "target_definition": "1 = Activity requiring security review, 0 = Benign/approved activity",
+  "random_seed": 42,
+  "train_samples": 2550,
+  "test_samples": 850,
+  "feature_columns": [
+    "outbound_mb",
+    "inbound_mb",
+    "connection_count",
+    "byte_ratio",
+    "domain_entropy",
+    "is_ai_service",
+    "policy_risk_weight"
+  ],
+  "primary_model_metrics": {
+    "model": "RandomForestClassifier",
+    "accuracy": 0.9871,
+    "precision": 0.9827,
+    "recall": 0.9961,
+    "f1_score": 0.9893,
+    "false_positive_rate": 0.0266,
+    "confusion_matrix": {
+      "true_negative": 329,
+      "false_positive": 9,
+      "false_negative": 2,
+      "true_positive": 510
+    }
+  },
+  "comparison_model_metrics": {
+    "model": "LogisticRegression",
+    "precision": 0.979,
+    "recall": 1.0,
+    "f1_score": 0.9894,
+    "false_positive_rate": 0.0325,
+    "confusion_matrix": {
+      "true_negative": 327,
+      "false_positive": 11,
+      "false_negative": 0,
+      "true_positive": 512
+    }
+  },
+  "feature_importance": {
+    "outbound_mb": 0.2287,
+    "inbound_mb": 0.1038,
+    "connection_count": 0.0677,
+    "byte_ratio": 0.0261,
+    "domain_entropy": 0.0203,
+    "is_ai_service": 0.0203,
+    "policy_risk_weight": 0.533
+  },
+  "evaluated_at": "2026-10-09T19:47:18.478903+00:00",
+  "critical_disclaimer": "These metrics are obtained on a reproducible synthetic benchmark dataset. They do NOT represent validated accuracy in an unconstrained enterprise network."
+}

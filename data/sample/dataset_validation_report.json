@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-10-09T12:49:38.306486+00:00",
+  "random_seed": 42,
+  "datasets": {
+    "synthetic_dataset": {
+      "filename": "shadow_ai_events_synthetic.csv",
+      "total_records": 3400,
+      "columns": [
+        "event_id",
+        "timestamp",
+        "device_id",
+        "destination_domain",
+        "connection_count",
+        "bytes_out",
+        "bytes_in",
+        "protocol",
+        "port",
+        "source_type",
+        "user_agent",
+        "expected_provider_match",
+        "expected_approval_status",
+        "expected_review_label"
+      ],
+      "duplicate_event_ids": [],
+      "empty_required_fields_count": {
+        "event_id": 0,
+        "timestamp": 0,
+        "device_id": 0,
+        "destination_domain": 0
+      },
+      "invalid_numeric_values_count": 0,
+      "invalid_timestamp_count": 0,
+      "status_distribution": {
+        "unapproved": 1378,
+        "approved": 774,
+        "requires_review": 540,
+        "non_ai": 526,
+        "unknown": 182
+      }
+    },
+    "edge_cases_dataset": {
+      "filename": "shadow_ai_events_edge_cases.csv",
+      "total_records": 11,
+      "columns": [
+        "event_id",
+        "timestamp",
+        "device_id",
+        "destination_domain",
+        "connection_count",
+        "bytes_out",
+        "bytes_in",
+        "protocol",
+        "port",
+        "source_type",
+        "user_agent",
+        "expected_provider_match",
+        "expected_approval_status",
+        "expected_review_label"
+      ],
+      "duplicate_event_ids": [
+        "EVT-EDGE-005-DUP"
+      ],
+      "empty_required_fields_count": {
+        "event_id": 0,
+        "timestamp": 0,
+        "device_id": 1,
+        "destination_domain": 1
+      },
+      "invalid_numeric_values_count": 2,
+      "invalid_timestamp_count": 1,
+      "status_distribution": {
+        "requires_review": 4,
+        "unapproved": 4,
+        "unknown": 2,
+        "approved": 1
+      }
+    }
+  },
+  "critical_disclaimer": "All dataset records are synthetic and reproducible. Labels are algorithmic ground-truth for testing detection logic and ML baselines; they are NOT real security telemetry or evidence of actual employee misconduct."
+}

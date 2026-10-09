@@ -1,0 +1,12 @@
+event_id,timestamp,device_id,destination_domain,connection_count,bytes_out,bytes_in,protocol,port,source_type,user_agent,expected_provider_match,expected_approval_status,expected_review_label
+EVT-EDGE-001,INVALID-2026-99-99T99:99:99,DEV-ENG-101,chatgpt.com,10,50000,150000,HTTPS,443,proxy,Mozilla/5.0,OpenAI,requires_review,requires_security_review
+EVT-EDGE-002,2026-09-10T12:00:00Z,DEV-FIN-102,https://invalid domain with spaces.com,5,20000,80000,HTTPS,443,proxy,Mozilla/5.0,None,unknown,invalid_domain
+EVT-EDGE-003,2026-09-10T12:05:00Z,,claude.ai,12,30000,120000,HTTPS,443,proxy,Mozilla/5.0,Anthropic,approved,approved_standard_activity
+EVT-EDGE-004,2026-09-10T12:10:00Z,DEV-MKT-103,,2,1000,5000,HTTPS,443,proxy,Mozilla/5.0,None,unknown,missing_domain
+EVT-EDGE-005-DUP,2026-09-10T12:15:00Z,DEV-SEC-104,perplexity.ai,15,95000,350000,HTTPS,443,proxy,Mozilla/5.0,Perplexity AI,unapproved,requires_security_review
+EVT-EDGE-005-DUP,2026-09-10T12:15:00Z,DEV-SEC-104,perplexity.ai,15,95000,350000,HTTPS,443,proxy,Mozilla/5.0,Perplexity AI,unapproved,requires_security_review
+EVT-EDGE-007,2026-09-10T12:20:00Z,DEV-OPS-105,chatgpt.com,-5,-1000,50000,HTTPS,443,proxy,Mozilla/5.0,OpenAI,requires_review,invalid_metrics
+EVT-EDGE-008,2026-09-10T12:25:00Z,DEV-HR-106,deepseek.com,many_connections,12000,45000,HTTPS,443,proxy,Mozilla/5.0,DeepSeek,unapproved,requires_security_review
+EVT-EDGE-009,2026-09-10T12:30:00Z,  DEV-SALES-107  ,   CHATGPT.COM   ,8,42000,190000,HTTPS,443,proxy,Mozilla/5.0,OpenAI,requires_review,requires_security_review
+EVT-EDGE-010,2026-09-10T12:35:00Z,DEV-EXEC-108,runwayml.com,4,18000,85000,,,,,Runway Gen-2/Gen-3,unapproved,requires_security_review
+EVT-EDGE-011,2026-09-10T12:40:00Z,DEV-ENG-109,huggingface.co,1400,450000000,1850000000,HTTPS,443,proxy,git-lfs/3.4.0,Hugging Face,requires_review,requires_security_review

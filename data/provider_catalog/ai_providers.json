@@ -1,0 +1,264 @@
+{
+  "catalog_version": "1.2.0",
+  "last_updated": "2026-10-09T00:00:00Z",
+  "providers": [
+    {
+      "name": "OpenAI",
+      "slug": "openai",
+      "category": "Generative AI / LLM",
+      "description": "Provider of ChatGPT, GPT-4, DALL-E, Whisper, and OpenAI API services.",
+      "risk_default": "medium",
+      "verification_status": "verified",
+      "verification_date": "2026-09-15",
+      "notes": "Corporate accounts require enterprise SSO; unsanctioned consumer ChatGPT accounts represent shadow AI risk.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "chatgpt.com", "match_type": "exact", "is_ai_service": true, "source": "Public DNS / Provider Documentation"},
+        {"pattern": "openai.com", "match_type": "subdomain", "is_ai_service": true, "source": "Public DNS / Provider Documentation"},
+        {"pattern": "api.openai.com", "match_type": "exact", "is_ai_service": true, "source": "OpenAI Developer Docs"},
+        {"pattern": "cdn.oaistatic.com", "match_type": "subdomain", "is_ai_service": true, "source": "ChatGPT Static Assets"},
+        {"pattern": "chat.openai.com", "match_type": "exact", "is_ai_service": true, "source": "Legacy Web Portal"}
+      ],
+      "default_policy": {
+        "approval_status": "requires_review",
+        "risk_weight": 45,
+        "notes": "Requires review unless employee uses corporate OpenAI Enterprise tenant."
+      }
+    },
+    {
+      "name": "Anthropic",
+      "slug": "anthropic",
+      "category": "Generative AI / LLM",
+      "description": "Creator of Claude models and Anthropic Console / Workbench API.",
+      "risk_default": "medium",
+      "verification_status": "verified",
+      "verification_date": "2026-09-20",
+      "notes": "High capability models with data ingestion risks if consumer Claude accounts are accessed.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "claude.ai", "match_type": "exact", "is_ai_service": true, "source": "Anthropic Web Portal"},
+        {"pattern": "anthropic.com", "match_type": "subdomain", "is_ai_service": true, "source": "Anthropic Domain Records"},
+        {"pattern": "api.anthropic.com", "match_type": "exact", "is_ai_service": true, "source": "Anthropic API Docs"}
+      ],
+      "default_policy": {
+        "approval_status": "approved",
+        "risk_weight": 20,
+        "notes": "Approved for Engineering and Product teams with corporate enterprise tenant."
+      }
+    },
+    {
+      "name": "Google Gemini & Vertex AI",
+      "slug": "google-gemini",
+      "category": "Generative AI / Multimodal",
+      "description": "Google Gemini consumer portal, Google AI Studio, and Vertex AI enterprise endpoints.",
+      "risk_default": "low",
+      "verification_status": "verified",
+      "verification_date": "2026-09-10",
+      "notes": "Workspace Gemini is approved; consumer gemini.google.com requires identity auditing.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "gemini.google.com", "match_type": "exact", "is_ai_service": true, "source": "Google Services"},
+        {"pattern": "aistudio.google.com", "match_type": "exact", "is_ai_service": true, "source": "Google AI Studio"},
+        {"pattern": "generativelanguage.googleapis.com", "match_type": "exact", "is_ai_service": true, "source": "Google Developer API"}
+      ],
+      "default_policy": {
+        "approval_status": "approved",
+        "risk_weight": 15,
+        "notes": "Sanctioned enterprise tool under Google Workspace Enterprise agreement."
+      }
+    },
+    {
+      "name": "GitHub Copilot",
+      "slug": "github-copilot",
+      "category": "AI Code Assistant",
+      "description": "AI pair programming tool integrated into IDEs.",
+      "risk_default": "low",
+      "verification_status": "verified",
+      "verification_date": "2026-09-01",
+      "notes": "Approved for developers holding corporate GitHub Enterprise seats.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "copilot-proxy.githubusercontent.com", "match_type": "subdomain", "is_ai_service": true, "source": "GitHub Copilot Telemetry Docs"},
+        {"pattern": "api.githubcopilot.com", "match_type": "exact", "is_ai_service": true, "source": "GitHub Copilot API Docs"}
+      ],
+      "default_policy": {
+        "approval_status": "approved",
+        "risk_weight": 10,
+        "notes": "Approved enterprise coding assistant."
+      }
+    },
+    {
+      "name": "Perplexity AI",
+      "slug": "perplexity",
+      "category": "AI Search Engine",
+      "description": "Conversational search and retrieval augmented generation service.",
+      "risk_default": "high",
+      "verification_status": "verified",
+      "verification_date": "2026-09-28",
+      "notes": "High potential for pasting internal proprietary queries and documentation.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "perplexity.ai", "match_type": "exact", "is_ai_service": true, "source": "Public Web Portal"},
+        {"pattern": "api.perplexity.ai", "match_type": "exact", "is_ai_service": true, "source": "Perplexity API Docs"},
+        {"pattern": "labs.perplexity.ai", "match_type": "exact", "is_ai_service": true, "source": "Perplexity Labs"}
+      ],
+      "default_policy": {
+        "approval_status": "unapproved",
+        "risk_weight": 70,
+        "notes": "Unapproved for corporate networks due to query logging policy."
+      }
+    },
+    {
+      "name": "Midjourney",
+      "slug": "midjourney",
+      "category": "AI Image Generation",
+      "description": "Text-to-image synthesis tool operating via Discord and web.",
+      "risk_default": "medium",
+      "verification_status": "verified",
+      "verification_date": "2026-09-05",
+      "notes": "Requires design department review before uploading source imagery.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "midjourney.com", "match_type": "subdomain", "is_ai_service": true, "source": "Midjourney Web Service"},
+        {"pattern": "cdn.midjourney.com", "match_type": "exact", "is_ai_service": true, "source": "Midjourney CDN"}
+      ],
+      "default_policy": {
+        "approval_status": "requires_review",
+        "risk_weight": 40,
+        "notes": "Requires review by Marketing and Legal departments."
+      }
+    },
+    {
+      "name": "Runway Gen-2/Gen-3",
+      "slug": "runway",
+      "category": "AI Video Generation",
+      "description": "AI video generation and editing platform.",
+      "risk_default": "high",
+      "verification_status": "verified",
+      "verification_date": "2026-08-30",
+      "notes": "Unsanctioned consumer video generation accounts.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "runwayml.com", "match_type": "subdomain", "is_ai_service": true, "source": "Runway Web Service"},
+        {"pattern": "app.runwayml.com", "match_type": "exact", "is_ai_service": true, "source": "Runway Web App"}
+      ],
+      "default_policy": {
+        "approval_status": "unapproved",
+        "risk_weight": 65,
+        "notes": "Unsanctioned AI tool on corporate network."
+      }
+    },
+    {
+      "name": "DeepSeek",
+      "slug": "deepseek",
+      "category": "Generative AI / Code & Reasoning",
+      "description": "DeepSeek LLM chat and API services.",
+      "risk_default": "critical",
+      "verification_status": "verified",
+      "verification_date": "2026-09-12",
+      "notes": "Strictly restricted: outbound telemetry to overseas servers poses significant data exfiltration risk.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "deepseek.com", "match_type": "subdomain", "is_ai_service": true, "source": "DeepSeek Web Services"},
+        {"pattern": "chat.deepseek.com", "match_type": "exact", "is_ai_service": true, "source": "DeepSeek Web Chat"},
+        {"pattern": "api.deepseek.com", "match_type": "exact", "is_ai_service": true, "source": "DeepSeek API"}
+      ],
+      "default_policy": {
+        "approval_status": "unapproved",
+        "risk_weight": 90,
+        "notes": "Strictly blocked under enterprise data protection policy."
+      }
+    },
+    {
+      "name": "Hugging Face",
+      "slug": "huggingface",
+      "category": "AI Model Repository & Spaces",
+      "description": "Hub for machine learning models, datasets, and hosted spaces.",
+      "risk_default": "medium",
+      "verification_status": "verified",
+      "verification_date": "2026-09-02",
+      "notes": "Model downloads can introduce untrusted weights or pickled model vulnerabilities.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "huggingface.co", "match_type": "subdomain", "is_ai_service": true, "source": "Hugging Face Platform"},
+        {"pattern": "hf.space", "match_type": "subdomain", "is_ai_service": true, "source": "Hosted AI Apps"}
+      ],
+      "default_policy": {
+        "approval_status": "requires_review",
+        "risk_weight": 35,
+        "notes": "Allowed for ML research teams with proxy inspection."
+      }
+    },
+    {
+      "name": "Character.AI",
+      "slug": "character-ai",
+      "category": "Entertainment AI / Chatbot",
+      "description": "Consumer conversational persona bot.",
+      "risk_default": "critical",
+      "verification_status": "verified",
+      "verification_date": "2026-09-18",
+      "notes": "Zero business justification on corporate hardware; social engineering & prompt leak risks.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "character.ai", "match_type": "exact", "is_ai_service": true, "source": "Character.AI Portal"},
+        {"pattern": "beta.character.ai", "match_type": "exact", "is_ai_service": true, "source": "Legacy Beta Portal"}
+      ],
+      "default_policy": {
+        "approval_status": "unapproved",
+        "risk_weight": 85,
+        "notes": "Prohibited on corporate assets."
+      }
+    },
+    {
+      "name": "Cursor / Anysphere",
+      "slug": "cursor-ai",
+      "category": "AI Code Editor",
+      "description": "AI-powered fork of VS Code sending codebase contexts to cloud models.",
+      "risk_default": "high",
+      "verification_status": "verified",
+      "verification_date": "2026-09-22",
+      "notes": "High codebase exfiltration hazard if unapproved privacy mode is not configured.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "cursor.com", "match_type": "subdomain", "is_ai_service": true, "source": "Cursor Official Site"},
+        {"pattern": "cursor.sh", "match_type": "subdomain", "is_ai_service": true, "source": "Cursor Cloud Backend"}
+      ],
+      "default_policy": {
+        "approval_status": "unapproved",
+        "risk_weight": 75,
+        "notes": "Requires enterprise security review and verified zero-data-retention agreement."
+      }
+    },
+    {
+      "name": "Poe / Quora",
+      "slug": "poe-ai",
+      "category": "Multi-Model AI Aggregator",
+      "description": "Aggregator allowing access to multiple frontier and third-party models.",
+      "risk_default": "high",
+      "verification_status": "verified",
+      "verification_date": "2026-09-08",
+      "notes": "Unsanctioned consumer multi-LLM proxy.",
+      "is_active": true,
+      "domains": [
+        {"pattern": "poe.com", "match_type": "subdomain", "is_ai_service": true, "source": "Poe Portal"}
+      ],
+      "default_policy": {
+        "approval_status": "unapproved",
+        "risk_weight": 80,
+        "notes": "Unapproved service."
+      }
+    }
+  ],
+  "known_non_ai_domains": [
+    "github.com",
+    "microsoft.com",
+    "google.com",
+    "aws.amazon.com",
+    "cloudflare.com",
+    "stackoverflow.com",
+    "wikipedia.org",
+    "slack.com",
+    "zoom.us",
+    "jira.atlassian.com"
+  ]
+}
