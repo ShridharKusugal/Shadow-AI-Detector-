@@ -7,10 +7,20 @@ export const getApiBase = (): string => {
   if (customUrl && customUrl.trim()) {
     return `${customUrl.trim().replace(/\/+$/, '')}/api/v1`;
   }
-  const envUrl = import.meta.env.VITE_API_URL;
+  let envUrl = import.meta.env.VITE_API_URL;
   if (envUrl && envUrl.trim()) {
+    // Auto-correct any typo in Render domain name (e.g. removing incorrect -api suffix)
+    if (envUrl.includes('shadow-ai-detector-api.onrender.com')) {
+      envUrl = 'https://shadow-ai-detector.onrender.com';
+    }
     return `${envUrl.trim().replace(/\/+$/, '')}/api/v1`;
   }
+
+  // If on Vercel or cloud domain, direct to verified live Render service
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+    return 'https://shadow-ai-detector.onrender.com/api/v1';
+  }
+
   return '/api/v1';
 };
 
