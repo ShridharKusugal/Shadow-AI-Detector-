@@ -89,12 +89,11 @@ class CSVProcessor:
         invalid_rows: List[Dict[str, Any]] = []
         duplicate_rows = 0
 
+        # Pre-load existing database event_uuids in 1 single fast query
+        existing_db_uuids = set(
+            r[0] for r in self.db.query(NetworkEvent.event_uuid).all()
+        )
         seen_event_ids = set()
-        
-        # Batch accumulation for database efficiency
-        events_to_add: List[NetworkEvent] = []
-        assessments_to_add = []
-        alerts_to_add = []
 
         for row_idx, raw_row in enumerate(reader, start=1):
             total_rows += 1
@@ -112,9 +111,7 @@ class CSVProcessor:
                     })
                     continue
                 
-                # Check if it already exists in the database
-                existing_evt = self.db.query(NetworkEvent).filter(NetworkEvent.event_uuid == evt_id).first()
-                if existing_evt is not None:
+                if evt_id in existing_db_uuids:
                     duplicate_rows += 1
                     invalid_rows.append({
                         "row_number": row_idx,

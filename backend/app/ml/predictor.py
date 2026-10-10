@@ -49,12 +49,10 @@ class MLPredictor:
                 float(features.get("is_ai_service", 0)),
                 float(features.get("risk_weight", 0))
             ]
-            import pandas as pd
-            X_df = pd.DataFrame([row], columns=self.feature_cols)
-            prob = float(self.model.predict_proba(X_df)[0][1])
+            prob = float(self.model.predict_proba([row])[0][1])
             predicted = bool(prob >= 0.5)
             return predicted, round(prob, 4)
-        except Exception as e:
+        except Exception:
             # Safe heuristic fallback
             return bool(features.get("is_unapproved", 0) == 1), 0.75
 
