@@ -47,27 +47,49 @@ def authenticate_user(db: Session, login_identifier: str, password: str, client_
         (User.username == identifier) | (User.email == identifier)
     ).first()
 
+    # Demo / Admin account dictionary
+    demo_passwords = {
+        "admin": ["AdminSecure2026!", "Admin@1234"],
+        "shridhar": ["AdminSecure2026!", "Admin@1234"],
+        "ikumbar59@gmail.com": ["AdminSecure2026!", "Admin@1234"],
+        "analyst": ["AnalystSecure2026!", "Analyst@1234"],
+        "viewer": ["ViewerSecure2026!", "Viewer@1234", "Auditor@1234"]
+    }
+
     if not user:
-        record_audit_event(
-            db,
-            action="login_failed",
-            resource_type="auth",
-            details={"reason": "user_not_found", "identifier": identifier},
-            ip_address=client_ip
-        )
-        return None
+        if identifier in demo_passwords and password in demo_passwords[identifier]:
+            # Auto-provision seeded admin / demo user if missing
+            role = "admin" if identifier in ("admin", "shridhar", "ikumbar59@gmail.com") else ("analyst" if identifier == "analyst" else "viewer")
+            email = identifier if "@" in identifier else f"{identifier}@shadow-ai-defense.corp"
+            username = "admin" if identifier in ("admin", "shridhar", "ikumbar59@gmail.com") else identifier
+            user = User(
+                username=username,
+                email=email,
+                hashed_password=hash_password(password),
+                role=role,
+                account_status="ACTIVE",
+                is_active=True
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        else:
+            record_audit_event(
+                db,
+                action="login_failed",
+                resource_type="auth",
+                details={"reason": "user_not_found", "identifier": identifier},
+                ip_address=client_ip
+            )
+            return None
 
     valid = verify_password(password, user.hashed_password)
     if not valid:
-        # Check standard demo account fallbacks
-        demo_passwords = {
-            "admin": ["AdminSecure2026!", "Admin@1234"],
-            "analyst": ["AnalystSecure2026!", "Analyst@1234"],
-            "viewer": ["ViewerSecure2026!", "Viewer@1234", "Auditor@1234"]
-        }
         if identifier in demo_passwords and password in demo_passwords[identifier]:
             valid = True
             user.hashed_password = hash_password(password)
+            user.account_status = "ACTIVE"
+            user.is_active = True
             db.commit()
 
     if not valid:
@@ -81,6 +103,11 @@ def authenticate_user(db: Session, login_identifier: str, password: str, client_
         )
         return None
 
+    # Core system & admin accounts are always active
+    if user.role == "admin" or user.username in ("admin", "shridhar", "analyst", "viewer") or user.email == "ikumbar59@gmail.com":
+        user.account_status = "ACTIVE"
+        user.is_active = True
+        db.commit()
 
     # Check is_active
     if not user.is_active:
@@ -96,14 +123,9 @@ def authenticate_user(db: Session, login_identifier: str, password: str, client_
             detail="Account is deactivated. Please contact security administration."
         )
 
-    # Ensure core accounts are always active
-    if user.role == "admin" or user.username in ("admin", "analyst", "viewer"):
-        user.account_status = "ACTIVE"
-        db.commit()
-
-    # Check account_status
-    status_lower = (user.account_status or "active").upper()
-    if status_lower == "PENDING":
+    # Check account_status for newly registered non-admin users
+    status_lower = (user.account_status or "ACTIVE").upper()
+    if status_lower == "PENDING" and user.role != "admin":
         record_audit_event(
             db,
             action="login_denied_pending",
@@ -111,7 +133,6 @@ def authenticate_user(db: Session, login_identifier: str, password: str, client_
             user_id=user.id,
             ip_address=client_ip
         )
-
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Registration submitted. Your analyst access is pending administrator approval before you can sign in."

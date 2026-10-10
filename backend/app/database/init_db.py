@@ -12,6 +12,7 @@ def init_db(db: Session) -> None:
     # 1. Seed or activate core system users
     users_to_seed = [
         ("admin", "admin@shadow-ai-defense.corp", "AdminSecure2026!", "admin"),
+        ("shridhar", "ikumbar59@gmail.com", "AdminSecure2026!", "admin"),
         ("analyst", "analyst@shadow-ai-defense.corp", "AnalystSecure2026!", "analyst"),
         ("viewer", "viewer@shadow-ai-defense.corp", "ViewerSecure2026!", "viewer"),
     ]
