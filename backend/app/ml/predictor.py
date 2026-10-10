@@ -1,6 +1,11 @@
 import os
+import warnings
 import joblib
 from typing import Dict, Any, Tuple, Optional
+
+# Suppress feature name validation warnings during high-throughput inference loops
+warnings.filterwarnings("ignore", category=UserWarning)
+
 
 class MLPredictor:
     def __init__(self, model_path: Optional[str] = None):

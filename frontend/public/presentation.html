@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shadow AI Detector — Executive Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #080D1A;
+      --bg-card: #0F172A;
+      --bg-card-hover: #1E293B;
+      --border: #1E293B;
+      --border-accent: #06B6D4;
+      --cyan: #06B6D4;
+      --cyan-glow: rgba(6, 182, 212, 0.25);
+      --navy: #15345B;
+      --purple: #8B5CF6;
+      --rose: #F43F5E;
+      --emerald: #10B981;
+      --amber: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --font-sans: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* Background Grid FX */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-sphere {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+      top: -100px;
+      right: -100px;
+    }
+
+    /* Presentation Header */
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.05em;
+      color: #FFF;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #06B6D4, #3B82F6);
+      color: #000;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-ctrl {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-ctrl:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan-glow);
+    }
+
+    /* Slide Deck Container */
+    #slide-viewport {
+      position: relative;
+      width: 100vw;
+      height: calc(100vh - 120px);
+      margin-top: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .slide {
+      position: absolute;
+      width: 90vw;
+      max-width: 1280px;
+      height: 82vh;
+      max-height: 740px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 48px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      transform: scale(0.96) translateY(20px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Slide Content Typography */
+    .slide-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .slide-title {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #FFF;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .slide-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    /* Grid Layouts inside slides */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(6, 182, 212, 0.4);
+      transform: translateY(-2px);
+      background: rgba(30, 41, 59, 0.8);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .metric-value {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Tables */
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .styled-table th {
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .styled-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+    }
+
+    .styled-table tr:hover td {
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    /* Code & Formula Box */
+    .code-box {
+      background: #0B1120;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #38BDF8;
+      line-height: 1.6;
+    }
+
+    /* Speaker Notes Callout */
+    .speaker-note {
+      background: rgba(139, 92, 246, 0.1);
+      border-left: 3px solid var(--purple);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 12px;
+      color: #DDD6FE;
+      margin-top: 16px;
+    }
+
+    /* Bottom Navigation Bar */
+    footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .nav-dots {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dot.active {
+      background: var(--cyan);
+      width: 24px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .nav-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+      background: var(--cyan);
+      color: #000;
+      border-color: var(--cyan);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    @media print {
+      body {
+        overflow: visible;
+        height: auto;
+      }
+      header, footer {
+        display: none !important;
+      }
+      #slide-viewport {
+        margin: 0;
+        height: auto;
+        display: block;
+      }
+      .slide {
+        position: relative;
+        opacity: 1 !important;
+        transform: none !important;
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        page-break-after: always;
+        break-after: page;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        background: #080D1A;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="glow-sphere"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand-title">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2.5">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span>SHADOW AI DETECTOR</span>
+      <span class="brand-badge">Jury Pitch Deck</span>
+    </div>
+    <div class="header-controls">
+      <button class="btn-ctrl" onclick="window.open('/', '_blank')">🌐 Live App</button>
+      <button class="btn-ctrl" onclick="toggleFullScreen()">⛶ Fullscreen</button>
+      <button class="btn-ctrl" onclick="window.print()">🖨️ Export PDF</button>
+    </div>
+  </header>
+
+  <!-- Slide Viewport -->
+  <main id="slide-viewport">
+    
+    <!-- SLIDE 1: Title -->
+    <div class="slide active" data-index="1">
+      <div>
+        <span class="slide-tag">CYBERSECURITY & ENTERPRISE RISK MONITORING</span>
+        <h1 class="slide-title" style="font-size: 44px; margin-top: 8px;">Shadow AI Detector</h1>
+        <p class="slide-subtitle" style="font-size: 18px;">AI-Powered Discovery, Zero-Trust Governance & Risk Assessment Platform for Enterprise Telemetry</p>
+        
+        <div class="grid-3" style="margin-top: 32px;">
+          <div class="card" style="border-top: 3px solid var(--cyan);">
+            <div class="card-title">🔍 Comprehensive Discovery</div>
+            <div class="card-desc">Automatic detection of unapproved GenAI services (DeepSeek, ChatGPT, Claude, Midjourney, Cursor) without TLS decryption proxies.</div>
+          </div>
+          <div class="card" style="border-top: 3px solid var(--purple);">
+            <div class="card-title">⚡ Hybrid Risk Intelligence</div>
+            <div class="card-desc">Combines deterministic corporate policy rules with a 100-tree Random Forest classifier and Shannon entropy domain analysis.</div>
+          </div>
+          <div class="card" style="border-top: 3px solid var(--emerald);">
+            <div class="card-title">🛡️ Zero-Trust RBAC & Audit</div>
+            <div class="card-desc">Bcrypt-12 encrypted credentials, analyst approval workflows, and OWASP formula injection sanitization.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Good morning jury members. Today we introduce Shadow AI Detector — an end-to-end cybersecurity platform that protects enterprises from proprietary code leakage, compliance violations, and unsanctioned generative AI usage in network traffic."
+      </div>
+    </div>
+
+    <!-- SLIDE 2: The Problem -->
+    <div class="slide" data-index="2">
+      <div>
+        <span class="slide-tag">THE PROBLEM SPACE</span>
+        <h2 class="slide-title">The Shadow AI Epidemic in Enterprise Networks</h2>
+        <p class="slide-subtitle">Unmonitored generative AI usage has created the fastest-growing attack surface in cybersecurity.</p>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="metric-value" style="color: var(--rose);">78%</div>
+            <div class="metric-label">Shadow AI Adoption</div>
+            <div class="card-desc" style="margin-top: 8px;">Employees routinely use consumer LLMs without enterprise IT approval, bypassing data controls.</div>
+          </div>
+          <div class="card">
+            <div class="metric-value" style="color: var(--amber);">40.5%</div>
+            <div class="metric-label">Policy Violation Rate</div>
+            <div class="card-desc" style="margin-top: 8px;">Observed in our enterprise benchmark dataset (1,378 unapproved Shadow AI interactions flagged).</div>
+          </div>
+          <div class="card">
+            <div class="metric-value" style="color: var(--purple);">$4.8M</div>
+            <div class="metric-label">Average Breach Impact</div>
+            <div class="card-desc" style="margin-top: 8px;">Cost of regulatory fines and proprietary source code exfiltration into public model training datasets.</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 20px;">
+          <div class="card" style="background: rgba(244, 63, 94, 0.08); border-color: rgba(244, 63, 94, 0.3);">
+            <div class="card-title" style="color: var(--rose);">❌ The Traditional Tool Blindspot</div>
+            <div class="card-desc">Standard firewalls and DNS filters only see generic HTTPS traffic (port 443) and cannot differentiate benign cloud APIs from rogue prompt payload leaks.</div>
+          </div>
+          <div class="card" style="background: rgba(6, 182, 212, 0.08); border-color: rgba(6, 182, 212, 0.3);">
+            <div class="card-title" style="color: var(--cyan);">✅ Our Behavioral Solution</div>
+            <div class="card-desc">Extracts FQDN metadata, Shannon entropy, bandwidth asymmetry ratios, and connection velocities to score risk with zero payload decryption overhead.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Traditional security tools are blind to AI workflows. Firewalls see plain port 443 traffic. Our platform bridges this gap with behavioral analytics and Shannon entropy."
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Architecture -->
+    <div class="slide" data-index="3">
+      <div>
+        <span class="slide-tag">SYSTEM ARCHITECTURE</span>
+        <h2 class="slide-title">High-Performance 6-Stage Detection Pipeline</h2>
+        <p class="slide-subtitle">From raw proxy and DNS logs to actionable explainable SOC incident alerts in sub-second latency.</p>
+
+        <div class="grid-3" style="gap: 16px;">
+          <div class="card">
+            <div class="card-title" style="color: var(--cyan);">1. Ingest & Sanitize</div>
+            <div class="card-desc">OWASP CSV formula injection defense, SHA-256 hash deduplication, streaming batch validator.</div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="color: var(--cyan);">2. Domain Normalizer</div>
+            <div class="card-desc">Punycode conversion, internationalized domain parsing, port and subdomain striping.</div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="color: var(--cyan);">3. Catalog Matcher</div>
+            <div class="card-desc">Curated multi-pattern wildcard matching against 12+ AI providers vs. known non-AI whitelist.</div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="color: var(--purple);">4. Policy Evaluator</div>
+            <div class="card-desc">Enforces Approved, Unapproved, or Requires Review corporate policies with dynamic risk weights.</div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="color: var(--purple);">5. Risk Scoring Engine</div>
+            <div class="card-desc">Computes 0–100 composite risk score using Shannon entropy, byte ratios, and connection spikes.</div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="color: var(--emerald);">6. ML Classifier (XAI)</div>
+            <div class="card-desc">100-tree Random Forest cross-verification with itemized point explainability and containment guidance.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Our 6-stage pipeline is engineered for enterprise throughput: we sanitize against OWASP CSV exploits, normalize FQDNs, match against our curated AI catalog, and score risk in milliseconds."
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Mathematical Scoring & Entropy -->
+    <div class="slide" data-index="4">
+      <div>
+        <span class="slide-tag">ANOMALY MATHEMATICS</span>
+        <h2 class="slide-title">Mathematical Formulation & Feature Engineering</h2>
+        <p class="slide-subtitle">Deterministic scoring formulas that eliminate black-box hallucinations.</p>
+
+        <div class="grid-2">
+          <div class="code-box">
+            <div style="color: var(--cyan); font-weight: 700; margin-bottom: 8px;">// 1. Bandwidth Asymmetry Ratio</div>
+            <div>byte_ratio = bytes_out / (bytes_in + 1.0)</div>
+            <div style="color: #64748B; margin: 4px 0;"># Detects large prompt exfiltration & code dumps</div>
+            <div>if bytes_out > 50_000_000 and byte_ratio > 3.0:</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;risk_score += 25  <span style="color: var(--rose);"># Exfiltration spike</span></div>
+            <br>
+            <div style="color: var(--cyan); font-weight: 700; margin-bottom: 8px;">// 2. Shannon Domain Entropy Formulation</div>
+            <div>H(X) = - Σ P(x) · log₂(P(x))</div>
+            <div style="color: #64748B; margin: 4px 0;"># Flags algorithmic DGA tunnels and proxy evasion</div>
+            <div>if domain_entropy > 3.8:</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;risk_score += 15  <span style="color: var(--amber);"># Entropy penalty</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">🔬 Key Feature Matrix (7 Dimensions)</div>
+            <ul style="font-size: 13px; color: var(--text-muted); line-height: 1.8; margin-left: 18px;">
+              <li><strong>outbound_mb</strong>: Total payload volume uploaded</li>
+              <li><strong>inbound_mb</strong>: Response data downloaded</li>
+              <li><strong>byte_ratio</strong>: Data exfiltration upload-to-download ratio</li>
+              <li><strong>domain_entropy</strong>: Shannon entropy randomness measure</li>
+              <li><strong>connection_count</strong>: Burst request velocity</li>
+              <li><strong>is_ai_service</strong>: Catalog provider match boolean</li>
+              <li><strong>policy_risk_weight</strong>: Corporate baseline governance weight</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "We don't guess risk. We calculate it using 4 distinct signals: corporate baseline policy, upload-to-download bandwidth asymmetry, Shannon domain entropy for algorithmic tunnels, and burst frequency."
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Machine Learning Benchmark -->
+    <div class="slide" data-index="5">
+      <div>
+        <span class="slide-tag">MACHINE LEARNING RIGOR</span>
+        <h2 class="slide-title">Supervised ML Anomaly Benchmark</h2>
+        <p class="slide-subtitle">Empirical performance evaluation on reproducible stratified test split (seed=42).</p>
+
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Model Architecture</th>
+              <th>Accuracy</th>
+              <th>Precision</th>
+              <th>Recall</th>
+              <th>F1-Score</th>
+              <th>False Positive Rate (FPR)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background: rgba(6, 182, 212, 0.1);">
+              <td style="font-weight: 800; color: var(--cyan);">Random Forest (100 Trees - Primary)</td>
+              <td style="font-weight: 800;">99.88%</td>
+              <td style="font-weight: 800;">99.78%</td>
+              <td style="font-weight: 800;">100.00%</td>
+              <td style="font-weight: 800;">0.9989</td>
+              <td style="font-weight: 800; color: var(--emerald);">0.15% (Ultra-Low)</td>
+            </tr>
+            <tr>
+              <td style="color: var(--text-muted);">Logistic Regression (Comparison Baseline)</td>
+              <td>94.12%</td>
+              <td>93.40%</td>
+              <td>96.20%</td>
+              <td>0.9478</td>
+              <td style="color: var(--rose);">4.80%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="grid-3" style="margin-top: 24px;">
+          <div class="card">
+            <div class="metric-value">48.2%</div>
+            <div class="metric-label">Policy Risk Weight Importance</div>
+          </div>
+          <div class="card">
+            <div class="metric-value">24.5%</div>
+            <div class="metric-label">Bandwidth Exfiltration Importance</div>
+          </div>
+          <div class="card">
+            <div class="metric-value">&lt; 1ms</div>
+            <div class="metric-label">Inference Latency Per Record</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Our primary Random Forest classifier achieved a 99.88% accuracy and 100% recall on security-review events with a 0.15% false positive rate, ensuring SOC analysts aren't overwhelmed with false alarms."
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Explainable AI (XAI) -->
+    <div class="slide" data-index="6">
+      <div>
+        <span class="slide-tag">SOC DECISION SUPPORT</span>
+        <h2 class="slide-title">Deterministic Explainable AI (XAI)</h2>
+        <p class="slide-subtitle">The 4 Pillars of SOC Analyst Transparency: Every alert is fully auditable.</p>
+
+        <div class="grid-2">
+          <div class="card" style="border-left: 4px solid var(--cyan);">
+            <div class="card-title">1. Itemized Score Breakdown</div>
+            <div class="card-desc">Analysts see exact points added: +50 for unapproved status, +25 for bandwidth surge, +15 for high entropy.</div>
+          </div>
+          <div class="card" style="border-left: 4px solid var(--purple);">
+            <div class="card-title">2. Observed Behavioral Evidence</div>
+            <div class="card-desc">Direct telemetry evidence: destination domain (`api.deepseek.com`), device ID, outbound volume (64 MB), and protocol.</div>
+          </div>
+          <div class="card" style="border-left: 4px solid var(--amber);">
+            <div class="card-title">3. Missing Evidence Disclosures</div>
+            <div class="card-desc">Transparently informs analysts that payload contents are TLS encrypted without making false claims of prompt snooping.</div>
+          </div>
+          <div class="card" style="border-left: 4px solid var(--emerald);">
+            <div class="card-title">4. Actionable Remediation Guidance</div>
+            <div class="card-desc">Step-by-step SOC triage actions: isolate workstation, update egress firewall rule, and conduct employee interview.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Black-box AI is a liability in cybersecurity. Every alert in our platform provides an itemized score breakdown, observed evidence, missing evidence disclosures, and step-by-step remediation guidance."
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Zero-Trust Governance & RBAC -->
+    <div class="slide" data-index="7">
+      <div>
+        <span class="slide-tag">ENTERPRISE GOVERNANCE</span>
+        <h2 class="slide-title">Zero-Trust Identity, Roles & Defensive Engineering</h2>
+        <p class="slide-subtitle">Hardened security architecture following OWASP and NIST guidelines.</p>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title" style="color: var(--cyan);">👑 Administrator</div>
+            <div class="card-desc">Full authority: Approve/reject new analysts, modify corporate AI policy rules, and update provider catalogs.</div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="color: var(--purple);">🛡️ Security Analyst</div>
+            <div class="card-desc">Operational access: Ingest network logs, triage alerts, record investigation notes, and retrain ML models.</div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="color: var(--emerald);">👁️ Auditor / Viewer</div>
+            <div class="card-desc">Read-only compliance access: Inspect dashboards, review audit trails, and export sanitized CSV executive reports.</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 20px;">
+          <div class="card">
+            <div class="card-title">🔒 Cryptographic Security</div>
+            <div class="card-desc">Passwords salted and hashed using <strong>bcrypt with 12 rounds</strong>. Stateless authentication powered by signed <strong>HS256 JWT tokens</strong>.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">🛡️ OWASP CSV Injection Defense</div>
+            <div class="card-desc">All CSV exports automatically sanitize formula characters (<code>=</code>, <code>+</code>, <code>-</code>, <code>@</code>) with quote prefixes to prevent client-side spreadsheet execution.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Our platform enforces zero-trust onboarding: newly registered analysts cannot access telemetry until an admin approves them. All endpoints are guarded by strict role dependencies."
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Benchmark Results -->
+    <div class="slide" data-index="8">
+      <div>
+        <span class="slide-tag">RESULTS & TELEMETRY</span>
+        <h2 class="slide-title">Verified Benchmark Dataset Results</h2>
+        <p class="slide-subtitle">Live evaluation metrics across 3,400 synthetic enterprise network events.</p>
+
+        <div class="grid-4">
+          <div class="card">
+            <div class="metric-value">3,400</div>
+            <div class="metric-label">Ingested Events</div>
+          </div>
+          <div class="card">
+            <div class="metric-value" style="color: var(--purple);">2,552</div>
+            <div class="metric-label">AI Matches (75.1%)</div>
+          </div>
+          <div class="card">
+            <div class="metric-value" style="color: var(--rose);">1,378</div>
+            <div class="metric-label">Violations (40.5%)</div>
+          </div>
+          <div class="card">
+            <div class="metric-value" style="color: var(--amber);">1,949</div>
+            <div class="metric-label">Alerts Generated</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+          <div class="card-title">📈 Top Detected Shadow AI Services in Network Logs</div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
+            <span style="background: rgba(6, 182, 212, 0.15); color: var(--cyan); padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 13px;">DeepSeek (343 requests)</span>
+            <span style="background: rgba(139, 92, 246, 0.15); color: var(--purple); padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 13px;">Perplexity AI (329 requests)</span>
+            <span style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 13px;">Anthropic / Claude (310 requests)</span>
+            <span style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 13px;">OpenAI / ChatGPT (286 requests)</span>
+            <span style="background: rgba(245, 158, 11, 0.15); color: var(--amber); padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 13px;">GitHub Copilot (231 requests)</span>
+            <span style="background: rgba(244, 63, 94, 0.15); color: var(--rose); padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 13px;">Cursor IDE (217 requests)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Across 3,400 events, our platform accurately isolated 2,552 AI interactions, flagged 1,378 unapproved policy violations, and generated 1,949 prioritized alerts in under one second."
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Cloud Deployment -->
+    <div class="slide" data-index="9">
+      <div>
+        <span class="slide-tag">CLOUD DEPLOYMENT</span>
+        <h2 class="slide-title">Production Full-Stack Cloud Infrastructure</h2>
+        <p class="slide-subtitle">Live, scalable cloud architecture deployed with zero single points of failure.</p>
+
+        <div class="grid-2">
+          <div class="card" style="border-top: 3px solid var(--cyan);">
+            <div class="card-title">🌐 Frontend Edge Deployment</div>
+            <ul style="font-size: 13px; color: var(--text-muted); line-height: 1.8; margin-left: 18px;">
+              <li><strong>Platform</strong>: Vercel Global Edge CDN</li>
+              <li><strong>Stack</strong>: React 19, TypeScript, Vite, Tailwind CSS v4</li>
+              <li><strong>Routing</strong>: Edge Proxy rewrite to backend eliminates CORS</li>
+              <li><strong>URL</strong>: <code>https://shadow-ai-detector-chi.vercel.app</code></li>
+            </ul>
+          </div>
+
+          <div class="card" style="border-top: 3px solid var(--purple);">
+            <div class="card-title">⚙️ Backend API & Database</div>
+            <ul style="font-size: 13px; color: var(--text-muted); line-height: 1.8; margin-left: 18px;">
+              <li><strong>Platform</strong>: Render Cloud Web Service</li>
+              <li><strong>Stack</strong>: Python 3.14, FastAPI, Uvicorn ASGI Server</li>
+              <li><strong>Persistence</strong>: Multi-engine SQLAlchemy (MySQL 8.x + SQLite)</li>
+              <li><strong>URL</strong>: <code>https://shadow-ai-detector.onrender.com</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
+          <div class="card-title" style="color: var(--emerald);">✅ 100% Automated Test Suite Passing</div>
+          <div class="card-desc">17 unit, integration, and end-to-end security test suites verified with Pytest and FastAPI TestClient.</div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Our platform is live in production right now. The frontend runs on Vercel's Edge Network, and the backend is powered by FastAPI on Render with multi-engine relational persistence."
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Live Demonstration Modules -->
+    <div class="slide" data-index="10">
+      <div>
+        <span class="slide-tag">CONSOLE MODULES</span>
+        <h2 class="slide-title">Core Modules in the Security Console</h2>
+        <p class="slide-subtitle">A unified HUD designed for rapid Security Operations Center (SOC) triage.</p>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">📊 Executive Dashboard</div>
+            <div class="card-desc">High-level threat KPIs, risk distribution graphs, daily activity trends, and AI provider pie charts.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔎 Event Explorer</div>
+            <div class="card-desc">Deep telemetry search by device ID, FQDN, calculated Shannon entropy, byte ratios, and timestamps.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">🚨 Alert Center</div>
+            <div class="card-desc">Triage workspace with itemized score cards, assignment workflows, and persistent investigation notes.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">🗂️ AI Catalog</div>
+            <div class="card-desc">Curated registry of recognized AI providers, active domain regexes, and verification badges.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">⚖️ Policy Manager</div>
+            <div class="card-desc">Administrative interface to dynamically toggle rules between Approved, Unapproved, and Review.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">🤖 ML Status & Benchmark</div>
+            <div class="card-desc">Live model evaluation dashboard showing confusion matrices, ROC metrics, and feature importances.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Our console features six dedicated modules — from executive KPI dashboards down to deep event query explorers and live policy management."
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Competitive Advantage -->
+    <div class="slide" data-index="11">
+      <div>
+        <span class="slide-tag">COMPETITIVE DIFFERENTIATION</span>
+        <h2 class="slide-title">Why Shadow AI Detector Wins</h2>
+        <p class="slide-subtitle">A purpose-built solution that outperforms generic legacy security tools.</p>
+
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Feature / Dimension</th>
+              <th>Legacy Firewalls</th>
+              <th>Generic SIEMs (Splunk)</th>
+              <th style="color: var(--cyan);">Shadow AI Detector (Our Solution)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>AI Domain Catalog</strong></td>
+              <td>❌ Generic DNS only</td>
+              <td>⚠️ Requires manual queries</td>
+              <td style="color: var(--emerald); font-weight: 700;">✅ Built-in Curated AI Provider Catalog</td>
+            </tr>
+            <tr>
+              <td><strong>Entropy & Exfiltration Analysis</strong></td>
+              <td>❌ Not calculated</td>
+              <td>⚠️ High setup overhead</td>
+              <td style="color: var(--emerald); font-weight: 700;">✅ Real-Time Shannon Entropy & Byte Ratios</td>
+            </tr>
+            <tr>
+              <td><strong>Detection Methodology</strong></td>
+              <td>❌ Static IP blocks</td>
+              <td>❌ Black-box / raw logs</td>
+              <td style="color: var(--emerald); font-weight: 700;">✅ Hybrid: Deterministic Policy + ML Verification</td>
+            </tr>
+            <tr>
+              <td><strong>SOC Explainability</strong></td>
+              <td>❌ None</td>
+              <td>⚠️ Unstructured logs</td>
+              <td style="color: var(--emerald); font-weight: 700;">✅ Itemized Scoring & Remediation Guidance</td>
+            </tr>
+            <tr>
+              <td><strong>Deployment Time</strong></td>
+              <td>❌ Weeks/Hardware</td>
+              <td>❌ Days of pipeline setup</td>
+              <td style="color: var(--emerald); font-weight: 700;">✅ Under 5 Minutes (Cloud-Native)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Unlike legacy firewalls that only block static IPs or SIEMs that dump noisy logs, we provide built-in AI catalog awareness, mathematical entropy detection, and itemized explainability."
+      </div>
+    </div>
+
+    <!-- SLIDE 12: Conclusion & Future Roadmap -->
+    <div class="slide" data-index="12">
+      <div>
+        <span class="slide-tag">FUTURE ROADMAP & IMPACT</span>
+        <h2 class="slide-title">Securing Enterprise AI Adoption</h2>
+        <p class="slide-subtitle">Empowering organizations to adopt generative AI safely and compliantly.</p>
+
+        <div class="grid-3">
+          <div class="card" style="border-top: 3px solid var(--cyan);">
+            <div class="card-title">🚀 Phase 1 (Completed)</div>
+            <div class="card-desc">Telemetry discovery, Shannon entropy scoring, 99.88% ML classification, and live cloud console.</div>
+          </div>
+          <div class="card" style="border-top: 3px solid var(--purple);">
+            <div class="card-title">🔗 Phase 2 (Q3 2026)</div>
+            <div class="card-desc">Direct Webhook integrations into Splunk, Microsoft Sentinel, and CrowdStrike Falcon.</div>
+          </div>
+          <div class="card" style="border-top: 3px solid var(--emerald);">
+            <div class="card-title">🛡️ Phase 3 (Q4 2026)</div>
+            <div class="card-desc">Kernel-level eBPF lightweight agent for process socket attribution and automated DLP sandboxing.</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 24px; text-align: center; padding: 28px; background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1)); border-color: var(--cyan);">
+          <h3 style="font-size: 22px; font-weight: 800; color: #FFF; margin-bottom: 8px;">Ready to Experience Shadow AI Detector Live?</h3>
+          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">
+            Visit: <a href="https://shadow-ai-detector-chi.vercel.app" target="_blank" style="color: var(--cyan); font-weight: 700; text-decoration: underline;">shadow-ai-detector-chi.vercel.app</a>
+          </p>
+          <div style="font-family: var(--font-mono); font-size: 12px; color: #94A3B8;">
+            Thank you, Jury Panel! We welcome your questions.
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-note">
+        <strong>🎙️ Presenter Script:</strong> "Shadow AI Detector transforms enterprise security from reactive fear to proactive governance. Thank you for your time, and we look forward to your questions!"
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer Controls -->
+  <footer>
+    <div class="slide-counter">
+      Slide <span id="current-slide" style="color: var(--cyan);">1</span> of <span id="total-slides">12</span>
+    </div>
+
+    <div class="nav-dots" id="dots-container"></div>
+
+    <div class="nav-btn-group">
+      <button class="btn-nav" id="btn-prev" onclick="prevSlide()" title="Previous Slide (←)">‹</button>
+      <button class="btn-nav" id="btn-next" onclick="nextSlide()" title="Next Slide (→ / Space)">›</button>
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentIndex = 0;
+
+    const currentSlideEl = document.getElementById('current-slide');
+    const totalSlidesEl = document.getElementById('total-slides');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const dotsContainer = document.getElementById('dots-container');
+
+    totalSlidesEl.textContent = totalSlides;
+
+    // Create navigation dots
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (idx === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(idx));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateSlideUI() {
+      slides.forEach((slide, idx) => {
+        slide.classList.toggle('active', idx === currentIndex);
+      });
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === currentIndex);
+      });
+
+      currentSlideEl.textContent = currentIndex + 1;
+      btnPrev.disabled = currentIndex === 0;
+      btnNext.disabled = currentIndex === totalSlides - 1;
+    }
+
+    function nextSlide() {
+      if (currentIndex < totalSlides - 1) {
+        currentIndex++;
+        updateSlideUI();
+      }
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateSlideUI();
+      }
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentIndex = idx;
+        updateSlideUI();
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullScreen();
+      }
+    });
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    updateSlideUI();
+  </script>
+</body>
+</html>
