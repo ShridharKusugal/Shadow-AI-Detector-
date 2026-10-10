@@ -77,6 +77,8 @@ def init_db(db: Session) -> None:
                     db.add(domain_obj)
 
                 # Add Policy
+                admin_account = db.query(User).filter(User.username == "admin").first()
+                admin_id = admin_account.id if admin_account else 1
                 def_pol = prov_data.get("default_policy", {})
                 policy_obj = PolicyRule(
                     provider_id=provider.id,
@@ -85,7 +87,7 @@ def init_db(db: Session) -> None:
                     risk_weight=def_pol.get("risk_weight", 50),
                     version=1,
                     notes=def_pol.get("notes", "Initial baseline policy rule"),
-                    updated_by_user_id=admin_user.id
+                    updated_by_user_id=admin_id
                 )
                 db.add(policy_obj)
 
