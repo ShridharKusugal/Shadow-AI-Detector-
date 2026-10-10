@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { PendingAnalystsModal } from './PendingAnalystsModal';
 import { ThemeSelector } from './ThemeSelector';
-import { ShieldAlert, LogOut, User as UserIcon, UserCheck, Award } from 'lucide-react';
+import { ShieldAlert, LogOut, User as UserIcon, UserCheck, Award, Presentation } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -81,6 +81,19 @@ export const Navbar: React.FC = () => {
                 </button>
               )}
 
+              {/* Presentation Deck Link */}
+              <a
+                href="/presentation.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost text-xs gap-1.5 font-semibold text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all shadow-sm"
+                title="Open Interactive Pitch & Architecture Presentation Deck"
+                aria-label="Open Interactive Pitch Presentation Deck"
+              >
+                <Presentation className="w-3.5 h-3.5 text-cyan-400" aria-hidden="true" />
+                <span className="hidden sm:inline">Presentation PPT</span>
+              </a>
+
               {/* Theme Selector */}
               <ThemeSelector />
 
@@ -137,12 +150,24 @@ export const Navbar: React.FC = () => {
               </button>
             </div>
           ) : (
-            <Link
-              to="/login"
-              className="btn btn-primary text-xs font-mono tracking-wide"
-            >
-              Sign In
-            </Link>
+            <div className="flex items-center gap-2">
+              <a
+                href="/presentation.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost text-xs gap-1.5 font-semibold text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all shadow-sm"
+                title="Open Interactive Pitch & Architecture Presentation Deck"
+              >
+                <Presentation className="w-3.5 h-3.5 text-cyan-400" aria-hidden="true" />
+                <span>Presentation PPT</span>
+              </a>
+              <Link
+                to="/login"
+                className="btn btn-primary text-xs font-mono tracking-wide"
+              >
+                Sign In
+              </Link>
+            </div>
           )}
         </div>
       </div>

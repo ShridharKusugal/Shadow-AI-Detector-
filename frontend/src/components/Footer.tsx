@@ -40,10 +40,10 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="font-bold mb-4 tracking-wider text-xs" style={{ color: 'var(--text-muted)' }}>RESOURCES</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-cyan-light transition-colors">Documentation</a></li>
-              <li><a href="#" className="hover:text-cyan-light transition-colors">API Reference</a></li>
+              <li><a href="/presentation.html" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-light transition-colors font-medium text-cyan-400">📊 Presentation Deck (PPT)</a></li>
+              <li><a href="https://shadow-ai-detector.onrender.com/docs" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-light transition-colors">API Interactive Docs</a></li>
               <li><Link to="/reports" className="hover:text-cyan-light transition-colors">Audit Logs & Reports</Link></li>
-              <li><a href="#" className="hover:text-cyan-light transition-colors">Security Whitepapers</a></li>
+              <li><Link to="/model" className="hover:text-cyan-light transition-colors">ML Model Metrics</Link></li>
             </ul>
           </div>
 
