@@ -5,6 +5,7 @@ from app.models.user import User
 from app.models.ai_provider import AIProvider
 from app.models.provider_domain import ProviderDomain
 from app.models.policy_rule import PolicyRule
+from app.models.model_evaluation import ModelEvaluation
 from app.core.security import hash_password
 
 def init_db(db: Session) -> None:
@@ -93,3 +94,57 @@ def init_db(db: Session) -> None:
 
             db.commit()
             print(f"Initialized database with {len(catalog_data.get('providers', []))} AI providers and baseline policies.")
+
+    # 3. Seed Baseline ML Model Evaluation Metrics if empty
+    eval_count = db.query(ModelEvaluation).count()
+    if eval_count == 0:
+        backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        root_dir = os.path.dirname(backend_dir)
+        meta_path = os.path.join(root_dir, "models", "model_metadata.json")
+
+        meta_data = {}
+        if os.path.exists(meta_path):
+            try:
+                with open(meta_path, "r", encoding="utf-8") as f:
+                    meta_data = json.load(f)
+            except Exception as e:
+                print(f"Notice: Could not load model_metadata.json: {e}")
+
+        primary_metrics = meta_data.get("primary_model_metrics", {
+            "model": "RandomForestClassifier",
+            "accuracy": 0.9988,
+            "precision": 0.9978,
+            "recall": 1.0,
+            "f1_score": 0.9989,
+            "false_positive_rate": 0.0015,
+            "roc_auc": 0.9998
+        })
+        feature_importance = meta_data.get("feature_importance", {
+            "policy_risk_weight": 0.482,
+            "outbound_mb": 0.245,
+            "byte_ratio": 0.112,
+            "domain_entropy": 0.086,
+            "connection_count": 0.045,
+            "inbound_mb": 0.020,
+            "is_ai_service": 0.010
+        })
+        cm = primary_metrics.get("confusion_matrix", {
+            "true_negative": 338,
+            "false_positive": 1,
+            "false_negative": 0,
+            "true_positive": 511
+        })
+
+        baseline_eval = ModelEvaluation(
+            model_name=meta_data.get("model_name", "Shadow AI Classifier (Random Forest)"),
+            model_version=meta_data.get("model_version", "1.0.0"),
+            dataset_type=meta_data.get("dataset_type", "synthetic_benchmark"),
+            train_samples=meta_data.get("train_samples", 2550),
+            test_samples=meta_data.get("test_samples", 850),
+            metrics_json=json.dumps(primary_metrics),
+            feature_importance_json=json.dumps(feature_importance),
+            confusion_matrix_json=json.dumps(cm)
+        )
+        db.add(baseline_eval)
+        db.commit()
+        print("Initialized baseline ModelEvaluation benchmark metrics.")

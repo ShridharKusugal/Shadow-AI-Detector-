@@ -104,14 +104,27 @@ export const ModelEvaluationPage: React.FC = () => {
         <p className="text-sm text-slate-500">
           No trained scikit-learn model artifacts were found. Initialize the baseline model pipeline to activate ML risk scoring.
         </p>
-        {hasRole(['admin']) && (
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             onClick={handleRetrain}
             disabled={retraining}
-            className="btn btn-primary mx-auto"
+            className="btn btn-primary"
           >
-            {retraining ? 'Fitting Baseline Model...' : 'Train Baseline Model (seed=42)'}
+            {retraining ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                Fitting Baseline Model...
+              </>
+            ) : (
+              <>
+                <Cpu className="w-4 h-4" />
+                Initialize Baseline Model (seed=42)
+              </>
+            )}
           </button>
+        </div>
+        {retrainMsg && (
+          <p className="text-xs font-mono text-cyan-500 mt-2">{retrainMsg}</p>
         )}
       </div>
     );
