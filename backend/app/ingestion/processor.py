@@ -39,17 +39,35 @@ class CSVProcessor:
 
         # Check existing batch with exact hash
         existing = self.db.query(IngestionBatch).filter(IngestionBatch.file_hash == file_hash).first()
-        if existing is not None:
-            return {
-                "success": True,
-                "batch_id": existing.id,
-                "batch_uuid": existing.batch_uuid,
-                "total_rows": existing.row_count,
-                "valid_rows": existing.valid_count,
-                "invalid_rows": existing.invalid_count,
-                "duplicate_rows": existing.duplicate_count,
-                "message": "File was already ingested previously. Deduplication skipped reprocessing."
-            }
+        if existing is not None and existing.status == "completed":
+            # If it's a synthetic dataset but we have 0 network events, bypass deduplication
+            # because the database might have been cleared or partially reset.
+            if is_synthetic:
+                event_count = self.db.query(NetworkEvent).count()
+                if event_count == 0:
+                    pass # Bypass dedup and continue ingestion
+                else:
+                    return {
+                        "success": True,
+                        "batch_id": existing.id,
+                        "batch_uuid": existing.batch_uuid,
+                        "total_rows": existing.row_count,
+                        "valid_rows": existing.valid_count,
+                        "invalid_rows": existing.invalid_count,
+                        "duplicate_rows": existing.duplicate_count,
+                        "message": "File was already ingested previously. Deduplication skipped reprocessing."
+                    }
+            else:
+                return {
+                    "success": True,
+                    "batch_id": existing.id,
+                    "batch_uuid": existing.batch_uuid,
+                    "total_rows": existing.row_count,
+                    "valid_rows": existing.valid_count,
+                    "invalid_rows": existing.invalid_count,
+                    "duplicate_rows": existing.duplicate_count,
+                    "message": "File was already ingested previously. Deduplication skipped reprocessing."
+                }
 
         batch_uuid = f"BATCH-{uuid.uuid4().hex[:12].upper()}"
         batch = IngestionBatch(
