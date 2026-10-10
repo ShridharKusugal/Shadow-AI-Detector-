@@ -15,6 +15,26 @@ def get_dashboard_metrics(db: Session) -> Dict[str, Any]:
     """Retrieve comprehensive live security dashboard metrics directly from MySQL."""
     total_events = db.query(func.count(NetworkEvent.id)).scalar() or 0
 
+    if total_events == 0:
+        backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        root_dir = os.path.dirname(backend_dir)
+        csv_path = os.path.join(root_dir, "data", "sample", "shadow_ai_events_synthetic.csv")
+        if os.path.exists(csv_path):
+            try:
+                from app.ingestion.processor import CSVProcessor
+                with open(csv_path, "rb") as f:
+                    file_content = f.read()
+                processor = CSVProcessor(db)
+                processor.process_csv_content(
+                    file_content=file_content,
+                    file_name="shadow_ai_events_synthetic.csv",
+                    source_type="demo",
+                    is_synthetic=True
+                )
+                total_events = db.query(func.count(NetworkEvent.id)).scalar() or 0
+            except Exception as e:
+                print(f"Notice: Dashboard auto-ingestion notice: {e}")
+
     # Count known AI events (where risk assessment has provider_id or matched_domain)
     known_ai_events = (
         db.query(func.count(RiskAssessment.id))

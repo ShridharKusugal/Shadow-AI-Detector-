@@ -148,3 +148,28 @@ def init_db(db: Session) -> None:
         db.add(baseline_eval)
         db.commit()
         print("Initialized baseline ModelEvaluation benchmark metrics.")
+
+    # 4. Auto-Seed Benchmark Telemetry Events if empty
+    from app.models.network_event import NetworkEvent
+    from app.ingestion.processor import CSVProcessor
+
+    event_count = db.query(NetworkEvent).count()
+    if event_count == 0:
+        backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        root_dir = os.path.dirname(backend_dir)
+        csv_path = os.path.join(root_dir, "data", "sample", "shadow_ai_events_synthetic.csv")
+
+        if os.path.exists(csv_path):
+            try:
+                with open(csv_path, "rb") as f:
+                    file_content = f.read()
+                processor = CSVProcessor(db)
+                result = processor.process_csv_content(
+                    file_content=file_content,
+                    file_name="shadow_ai_events_synthetic.csv",
+                    source_type="demo",
+                    is_synthetic=True
+                )
+                print(f"Auto-ingested {result.get('total_events', 0)} benchmark telemetry events into database.")
+            except Exception as e:
+                print(f"Notice: Failed to auto-ingest benchmark events: {e}")
