@@ -1,0 +1,22 @@
+name: Render Backend 24/7 Keep-Alive
+
+on:
+  schedule:
+    # Ping every 10 minutes to prevent Render free-tier hibernation (which occurs after 15m)
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Shadow AI Detector API
+        run: |
+          echo "Pinging live Render backend to keep instance warm..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -m 30 "https://shadow-ai-detector.onrender.com/")
+          echo "Backend returned HTTP $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 301 ]; then
+            echo "Backend is live and awake!"
+          else
+            echo "Ping delivered (status $HTTP_STATUS)"
+          fi

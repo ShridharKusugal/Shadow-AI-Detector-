@@ -24,7 +24,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (credentials: { username: string; password: string }) => Promise<void>;
+  login: (credentials: { username: string; password: string }, onStatusUpdate?: (status: string) => void) => Promise<void>;
   register: (data: {
     full_name: string;
     email: string;
@@ -34,7 +34,7 @@ interface AuthContextType {
     organization?: string;
     invitation_code?: string;
     accept_policy?: boolean;
-  }) => Promise<RegisterResult>;
+  }, onStatusUpdate?: (status: string) => void) => Promise<RegisterResult>;
   logout: () => Promise<void>;
   hasRole: (roles: string[]) => boolean;
 }
@@ -64,8 +64,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     verifyUser();
   }, []);
 
-  const login = async (credentials: { username: string; password: string }) => {
-    const data = await api.login(credentials);
+  const login = async (credentials: { username: string; password: string }, onStatusUpdate?: (status: string) => void) => {
+    const data = await api.login(credentials, onStatusUpdate);
     const userInfo: User = {
       id: data.user_id,
       username: data.username,
@@ -87,8 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     organization?: string;
     invitation_code?: string;
     accept_policy?: boolean;
-  }): Promise<RegisterResult> => {
-    const res = await api.register(data);
+  }, onStatusUpdate?: (status: string) => void): Promise<RegisterResult> => {
+    const res = await api.register(data, onStatusUpdate);
     return res;
   };
 

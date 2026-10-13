@@ -1,11 +1,12 @@
-import React, { useState, useId } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { checkBackendHealth } from '../services/api';
 import {
   Shield, Lock, User, Mail, AlertCircle, ArrowRight,
   Eye, EyeOff, Building, CheckCircle2, KeyRound, Clock,
-  FileCheck2, ShieldCheck, Check
+  FileCheck2, ShieldCheck, Check, Server, RefreshCw
 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
@@ -31,10 +32,34 @@ export const LoginPage: React.FC = () => {
   // Common state
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'waking'>('checking');
   const [registeredUserSummary, setRegisteredUserSummary] = useState<{ username: string; email: string } | null>(null);
 
   const { login, register } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let active = true;
+    checkBackendHealth().then((res) => {
+      if (!active) return;
+      if (res.online) {
+        setBackendStatus('online');
+      } else {
+        setBackendStatus('waking');
+        const interval = setInterval(() => {
+          checkBackendHealth().then((r2) => {
+            if (!active) return;
+            if (r2.online) {
+              setBackendStatus('online');
+              clearInterval(interval);
+            }
+          });
+        }, 8000);
+      }
+    });
+    return () => { active = false; };
+  }, []);
 
   // Accessibility IDs
   const loginErrorId = useId();
@@ -88,21 +113,27 @@ export const LoginPage: React.FC = () => {
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setStatusMessage(null);
     setSubmitting(true);
 
     try {
-      await login({ username: loginIdentifier.trim(), password: loginPassword });
+      await login(
+        { username: loginIdentifier.trim(), password: loginPassword },
+        (msg) => setStatusMessage(msg)
+      );
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please verify credentials.');
     } finally {
       setSubmitting(false);
+      setStatusMessage(null);
     }
   };
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setStatusMessage(null);
 
     if (regPassword !== confirmPassword) {
       setError('Confirmation password does not match.');
@@ -121,16 +152,19 @@ export const LoginPage: React.FC = () => {
 
     setSubmitting(true);
     try {
-      const res = await register({
-        full_name: fullName.trim(),
-        email: regEmail.trim(),
-        username: regUsername.trim(),
-        password: regPassword,
-        confirm_password: confirmPassword,
-        organization: organization.trim() || undefined,
-        invitation_code: invitationCode.trim() || undefined,
-        accept_policy: acceptPolicy
-      });
+      const res = await register(
+        {
+          full_name: fullName.trim(),
+          email: regEmail.trim(),
+          username: regUsername.trim(),
+          password: regPassword,
+          confirm_password: confirmPassword,
+          organization: organization.trim() || undefined,
+          invitation_code: invitationCode.trim() || undefined,
+          accept_policy: acceptPolicy
+        },
+        (msg) => setStatusMessage(msg)
+      );
 
       setRegisteredUserSummary({
         username: res.username,
@@ -141,6 +175,7 @@ export const LoginPage: React.FC = () => {
       setError(err.message || 'Registration failed. Please check submitted data.');
     } finally {
       setSubmitting(false);
+      setStatusMessage(null);
     }
   };
 
@@ -179,6 +214,26 @@ export const LoginPage: React.FC = () => {
               {mode === 'register' && 'Apply for analyst credentials to access enterprise telemetry.'}
               {mode === 'pending_success' && 'Zero-trust onboarding pending administrator verification.'}
             </p>
+
+            {/* Live Backend Connection Indicator */}
+            <div className="mt-2.5 flex items-center justify-center">
+              {backendStatus === 'online' ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Cloud API: Online & Ready
+                </span>
+              ) : backendStatus === 'waking' ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs">
+                  <RefreshCw className="w-3 h-3 text-amber-500 animate-spin" />
+                  Waking Render server (~30s)...
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                  Checking connection...
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Quick Fill Demo Role Buttons */}
@@ -210,6 +265,17 @@ export const LoginPage: React.FC = () => {
                   Auditor
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* Status Message (e.g. Render warming up / retrying) */}
+          {statusMessage && (
+            <div
+              role="status"
+              className="mb-5 p-3.5 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs flex items-center space-x-2.5 animate-pulse"
+            >
+              <RefreshCw className="w-4 h-4 text-cyan-600 shrink-0 animate-spin" />
+              <span className="leading-relaxed font-semibold">{statusMessage}</span>
             </div>
           )}
 
@@ -299,10 +365,13 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="btn btn-primary w-full py-2.5 text-sm font-semibold shadow-md mt-2"
+                  className="btn btn-primary w-full py-2.5 text-sm font-semibold shadow-md mt-2 flex items-center justify-center space-x-2"
                 >
                   {submitting ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+                      <span>{statusMessage || 'Authenticating...'}</span>
+                    </>
                   ) : (
                     <>
                       <span>Sign In to Console</span>
